@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cálculo de Dieta Enteral HCFMB</title>
+    <style>
+        body {
+            font-family: Verdana, sans-serif;
+        }
+
+        /* Estilos para o rodapé */
+        footer {
+            background-color: #e9e9e9;
+            padding: 5px;
+            text-align: center;
+            position: bottom;
+            bottom: 0;
+            font-size: 10px;
+        }
+
+        .linha-destaque {
+            background-color: #cfe2f3; /* Define a cor de fundo desejada */
+            font-weight: bold; /* Torna o texto em negrito */
+        }
+
+        .linha-destaque td {
+            /* Define estilos para todas as células (td) da linha destacada, se necessário */
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            font-size: 12px
+        }
+    </style>
+    <script>
+        // Função para arredondar para baixo múltiplos de 50mL
+        function arredondarParaBaixo50(valor) {
+            return Math.floor(valor / 50) * 50;
+        }
+
+        function calcular() {
+            // Obtém os valores de peso, meta calórica e meta proteica
+            var peso = parseFloat(document.getElementById("peso").value.replace(",", "."));
+            var metaCalorica = parseFloat(document.getElementById("meta-calorica").value.replace(",", "."));
+            var metaProteina = parseFloat(document.getElementById("meta-proteina").value.replace(",", "."));
+
+            if (isNaN(peso) || isNaN(metaCalorica) || isNaN(metaProteina)) {
+                alert("Por favor, preencha todos os campos com valores numéricos válidos.");
+                return;
+            }
+
+            // Cálculo de volume pleno
+            var caloriasPorMl = [1, 1.5, 1.2]; // kcal/mL para Dietas Tipo 1, Tipo 2 s/ fibras e Tipo 2 c/ fibras
+
+            var caloriasTotais = peso * metaCalorica;
+            var proteinaTotal = peso * metaProteina;
+
+            // Volume Pleno = ARREDMULTB(Meta Calórica / Calorias por mL);50)
+            var volumeTipo1 = arredondarParaBaixo50(caloriasTotais / caloriasPorMl[0]);
+            var volumeTipo2SemFibras = arredondarParaBaixo50(caloriasTotais / caloriasPorMl[1]);
+            var volumeTipo2ComFibras = arredondarParaBaixo50(caloriasTotais / caloriasPorMl[2]);
+
+            // Proteína Faltante = Meta Proteica - (Volume Pleno * Quantidade de Proteína por mL de dieta)
+            var proteinaFaltanteTipo1 = proteinaTotal - (volumeTipo1 * 0.038);
+            var proteinaFaltanteTipo2SemFibras = proteinaTotal - (volumeTipo2SemFibras * 0.075);
+            var proteinaFaltanteTipo2ComFibras = proteinaTotal - (volumeTipo2ComFibras * 0.06);
+
+            // Módulo de proteína = arredondar.para.baixo(proteína faltante / qtd de proteina em gramas no módulo) * 5g de módulo
+            var moduloProteinaTipo1 = Math.floor(proteinaFaltanteTipo1 / 4.6) * 5;
+            var moduloProteinaTipo2SemFibras = Math.floor(proteinaFaltanteTipo2SemFibras / 4.6) * 5;
+            var moduloProteinaTipo2ComFibras = Math.floor(proteinaFaltanteTipo2ComFibras / 4.6) * 5;
+
+            // Verifique se os valores de "Módulo de Proteína" são negativos e, se forem, defina-os como 0
+            if (moduloProteinaTipo1 < 0) {
+                moduloProteinaTipo1 = 0;
+            }
+            if (moduloProteinaTipo2SemFibras < 0) {
+                moduloProteinaTipo2SemFibras = 0;
+            }
+            if (moduloProteinaTipo2ComFibras < 0) {
+                moduloProteinaTipo2ComFibras = 0;
+            }
+            // Oferta calórica total = Volume Pleno * Calorias por mL da dieta + (Módulo de Proteína * kcal por g de módulo)
+            var kcalTipo1 = (volumeTipo1 * caloriasPorMl[0]) + (moduloProteinaTipo1 * 3.66);
+            var kcalTipo2SemFibras = (volumeTipo2SemFibras * caloriasPorMl[1]) + (moduloProteinaTipo2SemFibras * 3.66);
+            var kcalTipo2ComFibras = (volumeTipo2ComFibras * caloriasPorMl[2]) + (moduloProteinaTipo2ComFibras *3.66);
+
+            // Oferta proteica total = (Módulo de proteína * g de proteina por grama de módulo) + (Volume Pleno * quantidade de proteína por mL de dieta)
+            var proteinaTotalTipo1 = (moduloProteinaTipo1 * 0.92) + (volumeTipo1 * 0.038);
+            var proteinaTotalTipo2SemFibras = (moduloProteinaTipo2SemFibras * 0.92) + (volumeTipo2SemFibras * 0.075);
+            var proteinaTotalTipo2ComFibras = (moduloProteinaTipo2ComFibras * 0.92) + (volumeTipo2ComFibras * 0.06);
+
+            // Kcal/kg e proteína/kg
+            var kcalKgTipo1 = kcalTipo1 / peso;
+            var kcalKgTipo2SemFibras = kcalTipo2SemFibras / peso;
+            var kcalKgTipo2ComFibras = kcalTipo2ComFibras / peso;
+
+            var proteinaKgTipo1 = proteinaTotalTipo1 / peso;
+            var proteinaKgTipo2SemFibras = proteinaTotalTipo2SemFibras / peso;
+            var proteinaKgTipo2ComFibras = proteinaTotalTipo2ComFibras / peso;
+
+            // Preencher a tabela com os resultados
+            document.getElementById("volume-tipo1").textContent = volumeTipo1;
+            document.getElementById("volume-tipo2-sem-fibras").textContent = volumeTipo2SemFibras;
+            document.getElementById("volume-tipo2-com-fibras").textContent = volumeTipo2ComFibras;
+
+            document.getElementById("modulo-proteina-tipo1").textContent = moduloProteinaTipo1;
+            document.getElementById("modulo-proteina-tipo2-sem-fibras").textContent = moduloProteinaTipo2SemFibras;
+            document.getElementById("modulo-proteina-tipo2-com-fibras").textContent = moduloProteinaTipo2ComFibras;
+
+            document.getElementById("kcal-tipo1").textContent = kcalTipo1.toFixed(2);
+            document.getElementById("kcal-tipo2-sem-fibras").textContent = kcalTipo2SemFibras.toFixed(2);
+            document.getElementById("kcal-tipo2-com-fibras").textContent = kcalTipo2ComFibras.toFixed(2);
+
+            document.getElementById("proteina-tipo1").textContent = proteinaTotalTipo1.toFixed(2);
+            document.getElementById("proteina-tipo2-sem-fibras").textContent = proteinaTotalTipo2SemFibras.toFixed(2);
+            document.getElementById("proteina-tipo2-com-fibras").textContent = proteinaTotalTipo2ComFibras.toFixed(2);
+
+            document.getElementById("kcal-kg-tipo1").textContent = kcalKgTipo1.toFixed(2);
+            document.getElementById("kcal-kg-tipo2-sem-fibras").textContent = kcalKgTipo2SemFibras.toFixed(2);
+            document.getElementById("kcal-kg-tipo2-com-fibras").textContent = kcalKgTipo2ComFibras.toFixed(2);
+
+            document.getElementById("proteina-kg-tipo1").textContent = proteinaKgTipo1.toFixed(2);
+            document.getElementById("proteina-kg-tipo2-sem-fibras").textContent = proteinaKgTipo2SemFibras.toFixed(2);
+            document.getElementById("proteina-kg-tipo2-com-fibras").textContent = proteinaKgTipo2ComFibras.toFixed(2);
+        }
+
+        function calcularAjusteManual() {
+            // Obtém os valores de peso, volume e módulo de proteína para o cálculo manual
+            var pesoAjusteManual = parseFloat(document.getElementById("peso-ajuste-manual").value.replace(",", "."));
+            var volumeAjusteManual = parseFloat(document.getElementById("volume-ajuste-manual").value.replace(",", "."));
+            var moduloProteinaAjusteManual = parseFloat(document.getElementById("modulo-proteina-ajuste-manual").value.replace(",", "."));
+
+            if (isNaN(pesoAjusteManual) || isNaN(volumeAjusteManual) || isNaN(moduloProteinaAjusteManual)) {
+                alert("Por favor, preencha todos os campos do cálculo manual com valores numéricos válidos.");
+                return;
+            }
+
+            var caloriasPorMl = [1, 1.5, 1.2]; // kcal/mL para Tipo 1, Tipo 2 s/ fibras e Tipo 2 c/ fibras
+
+            // Cálculo para a linha "Oferta calórica total"
+            var totalCaloriasTipo1 = (volumeAjusteManual * caloriasPorMl[0]) + (moduloProteinaAjusteManual * 3.66);
+            var totalCaloriasTipo2SemFibras = (volumeAjusteManual * caloriasPorMl[1]) + (moduloProteinaAjusteManual * 3.66);
+            var totalCaloriasTipo2ComFibras = (volumeAjusteManual * caloriasPorMl[2]) + (moduloProteinaAjusteManual * 3.66);
+
+            // Cálculo para a linha "Oferta proteica total"
+            var totalProteinasTipo1 = (volumeAjusteManual * 0.038) + (moduloProteinaAjusteManual * 0.92);
+            var totalProteinasTipo2SemFibras = (volumeAjusteManual * 0.075) + (moduloProteinaAjusteManual * 0.92);
+            var totalProteinasTipo2ComFibras = (volumeAjusteManual * 0.06) + (moduloProteinaAjusteManual * 0.92);
+
+            // Cálculo para a linha "Kcal/kg"
+            var kcalKgTipo1 = totalCaloriasTipo1 / pesoAjusteManual;
+            var kcalKgTipo2SemFibras = totalCaloriasTipo2SemFibras / pesoAjusteManual;
+            var kcalKgTipo2ComFibras = totalCaloriasTipo2ComFibras / pesoAjusteManual;
+
+            // Cálculo para a linha "Proteína/kg"
+            var proteinaKgTipo1 = totalProteinasTipo1 / pesoAjusteManual;
+            var proteinaKgTipo2SemFibras = totalProteinasTipo2SemFibras / pesoAjusteManual;
+            var proteinaKgTipo2ComFibras = totalProteinasTipo2ComFibras / pesoAjusteManual;
+
+            // Preencher a tabela de resultados do cálculo manual
+            document.getElementById("ajuste-manual-kcal-tipo1").textContent = totalCaloriasTipo1.toFixed(2);
+            document.getElementById("ajuste-manual-kcal-tipo2-sem-fibras").textContent = totalCaloriasTipo2SemFibras.toFixed(2);
+            document.getElementById("ajuste-manual-kcal-tipo2-com-fibras").textContent = totalCaloriasTipo2ComFibras.toFixed(2);
+
+            document.getElementById("ajuste-manual-proteina-tipo1").textContent = totalProteinasTipo1.toFixed(2);
+            document.getElementById("ajuste-manual-proteina-tipo2-sem-fibras").textContent = totalProteinasTipo2SemFibras.toFixed(2);
+            document.getElementById("ajuste-manual-proteina-tipo2-com-fibras").textContent = totalProteinasTipo2ComFibras.toFixed(2);
+
+            document.getElementById("ajuste-manual-kcal-kg-tipo1").textContent = kcalKgTipo1.toFixed(2);
+            document.getElementById("ajuste-manual-kcal-kg-tipo2-sem-fibras").textContent = kcalKgTipo2SemFibras.toFixed(2);
+            document.getElementById("ajuste-manual-kcal-kg-tipo2-com-fibras").textContent = kcalKgTipo2ComFibras.toFixed(2);
+
+            document.getElementById("ajuste-manual-proteina-kg-tipo1").textContent = proteinaKgTipo1.toFixed(2);
+            document.getElementById("ajuste-manual-proteina-kg-tipo2-sem-fibras").textContent = proteinaKgTipo2SemFibras.toFixed(2);
+            document.getElementById("ajuste-manual-proteina-kg-tipo2-com-fibras").textContent = proteinaKgTipo2ComFibras.toFixed(2);
+        }
+    </script>
+</head>
+<body>
+    <h1>Cálculo de Dieta Enteral HCFMB</h1>
+    <label for="peso">Peso (kg):</label>
+    <input type="text" id="peso"><br>
+
+    <label for="meta-calorica">Meta Calórica (kcal/kg):</label>
+    <input type="text" id="meta-calorica"><br>
+
+    <label for="meta-proteina">Meta Proteica (g/kg):</label>
+    <input type="text" id="meta-proteina"><br>
+
+    <button onclick="calcular()">Calcular</button><br>
+
+    <div style="margin-top: 20px;"></div>
+
+    <h2>Cálculo de Volume Pleno</h2>
+    <table>
+        <tr>
+            <th>Tipo de Dieta</th>
+            <th style="width: 25%;">Tipo 1</th>
+            <th style="width: 25%;">Tipo 2 s/ fibras</th>
+            <th style="width: 25%;">Tipo 2 c/ fibras</th>
+        </tr>
+        <tr class="linha-destaque">
+            <td>Volume pleno (mL)</td>
+            <td id="volume-tipo1"></td>
+            <td id="volume-tipo2-sem-fibras"></td>
+            <td id="volume-tipo2-com-fibras"></td>
+        </tr>
+        <tr class="linha-destaque">
+            <td>Módulo de Proteína (g)</td>
+            <td id="modulo-proteina-tipo1"></td>
+            <td id="modulo-proteina-tipo2-sem-fibras"></td>
+            <td id="modulo-proteina-tipo2-com-fibras"></td>
+        </tr>
+        <tr>
+            <td>Oferta calórica total*</td>
+            <td id="kcal-tipo1"></td>
+            <td id="kcal-tipo2-sem-fibras"></td>
+            <td id="kcal-tipo2-com-fibras"></td>
+        </tr>
+        <tr>
+            <td>Oferta proteica total*</td>
+            <td id="proteina-tipo1"></td>
+            <td id="proteina-tipo2-sem-fibras"></td>
+            <td id="proteina-tipo2-com-fibras"></td>
+        </tr>
+        <tr>
+            <td>Kcal/kg</td>
+            <td id="kcal-kg-tipo1"></td>
+            <td id="kcal-kg-tipo2-sem-fibras"></td>
+            <td id="kcal-kg-tipo2-com-fibras"></td>
+        </tr>
+        <tr>
+            <td>Proteína/kg (g)</td>
+            <td id="proteina-kg-tipo1"></td>
+            <td id="proteina-kg-tipo2-sem-fibras"></td>
+            <td id="proteina-kg-tipo2-com-fibras"></td>
+        </tr>
+    </table>
+    <p style="font-size: 10px;">* Dieta enteral + módulo de proteína.</p>
+    <div style="margin-top: 40px;"></div>
+
+    <h2>Ajuste Manual</h2>
+    <label for="peso-ajuste-manual">Peso (kg):</label>
+    <input type="text" id="peso-ajuste-manual"><br>
+
+    <label for="volume-ajuste-manual">Volume (mL):</label>
+    <input type="text" id="volume-ajuste-manual"><br>
+
+    <label for="modulo-proteina-ajuste-manual">Módulo de Proteína (g):</label>
+    <input type="text" id="modulo-proteina-ajuste-manual"><br>
+
+    <button onclick="calcularAjusteManual()">Calcular</button><br>
+
+    <div style="margin-top: 20px;"></div>
+
+
+    <table>
+        <tr>
+            <th>Tipo de Dieta</th>
+            <th style="width: 25%;">Tipo 1</th>
+            <th style="width: 25%;">Tipo 2 s/ fibras</th>
+            <th style="width: 25%;">Tipo 2 c/ fibras</th>
+        </tr>
+        <tr>
+            <td>Oferta calórica total*</td>
+            <td id="ajuste-manual-kcal-tipo1"></td>
+            <td id="ajuste-manual-kcal-tipo2-sem-fibras"></td>
+            <td id="ajuste-manual-kcal-tipo2-com-fibras"></td>
+        </tr>
+        <tr>
+            <td>Oferta proteica total*</td>
+            <td id="ajuste-manual-proteina-tipo1"></td>
+            <td id="ajuste-manual-proteina-tipo2-sem-fibras"></td>
+            <td id="ajuste-manual-proteina-tipo2-com-fibras"></td>
+        </tr>
+        <tr class="linha-destaque">
+            <td>Kcal/kg/dia</td>
+            <td id="ajuste-manual-kcal-kg-tipo1"></td>
+            <td id="ajuste-manual-kcal-kg-tipo2-sem-fibras"></td>
+            <td id="ajuste-manual-kcal-kg-tipo2-com-fibras"></td>
+        </tr>
+        <tr class="linha-destaque">
+            <td>Proteína/kg/dia (g)</td>
+            <td id="ajuste-manual-proteina-kg-tipo1"></td>
+            <td id="ajuste-manual-proteina-kg-tipo2-sem-fibras"></td>
+            <td id="ajuste-manual-proteina-kg-tipo2-com-fibras"></td>
+        </tr>
+    </table>
+    <p style="font-size: 10px;">* Dieta enteral + módulo de proteína.</p>
+    <footer>
+        <p>Elaborado por: Gabriela Amaral - Estagiária de Nutrição - UNESP Botucatu</p> 
+     <p>Nutricionista Preceptora: Olivia Pereira - Nutricionista HCFMB</p>
+        <p>Professora Orientadora: Profª Drª Thabata Koester</p>
+    </footer>
+</body>
+</html>
