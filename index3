@@ -2,8 +2,13 @@
 <html>
 <head>
     <title>Cálculo de Dieta Enteral HCFMB</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Adiciona a meta tag para tornar a página responsiva -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"> <!-- Desativa o zoom -->
     <style>
+        body, h1, h2, label, input {
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Verdana, sans-serif;
         }
