@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Cálculo de Dieta Enteral HCFMB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Adiciona a meta tag para tornar a página responsiva -->
     <style>
         body {
             font-family: Verdana, sans-serif;
@@ -12,8 +13,6 @@
             background-color: #e9e9e9;
             padding: 5px;
             text-align: center;
-            position: bottom;
-            bottom: 0;
             font-size: 10px;
         }
 
@@ -28,11 +27,19 @@
 
         table {
             border-collapse: collapse;
+            width: 100%; /* A tabela ocupa 100% da largura disponível */
         }
 
         table, th, td {
             border: 1px solid black;
-            font-size: 12px
+            font-size: 12px;
+        }
+
+        /* Estilos para tornar a tabela mais responsiva em telas menores */
+        @media screen and (max-width: 600px) {
+            table, th, td {
+                font-size: 10px; /* Reduz o tamanho da fonte em telas menores */
+            }
         }
     </style>
     <script>
