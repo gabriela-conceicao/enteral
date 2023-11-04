@@ -2,14 +2,8 @@
 <html>
 <head>
     <title>Cálculo de Dieta Enteral HCFMB</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"> <!-- Desativa o zoom -->
     <style>
-        body, h1, h2, label, input {
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
+      body {
             font-family: Verdana, sans-serif;
         }
 
@@ -32,19 +26,11 @@
 
         table {
             border-collapse: collapse;
-            width: 100%; /* A tabela ocupa 100% da largura disponível */
-        }
+              }
 
         table, th, td {
             border: 1px solid black;
             font-size: 12px;
-        }
-
-        /* Estilos para tornar a tabela mais responsiva em telas menores */
-        @media screen and (max-width: 600px) {
-            table, th, td {
-                font-size: 10px; /* Reduz o tamanho da fonte em telas menores */
-            }
         }
     </style>
     <script>
@@ -211,9 +197,9 @@
     <table>
         <tr>
             <th>Tipo de Dieta</th>
-            <th style="width: 25%;">Tipo 1</th>
-            <th style="width: 25%;">Tipo 2 s/ fibras</th>
-            <th style="width: 25%;">Tipo 2 c/ fibras</th>
+            <th>Tipo 1</th>
+            <th>Tipo 2 s/ fibras</th>
+            <th>Tipo 2 c/ fibras</th>
         </tr>
         <tr class="linha-destaque">
             <td>Volume pleno (mL)</td>
@@ -273,9 +259,9 @@
     <table>
         <tr>
             <th>Tipo de Dieta</th>
-            <th style="width: 25%;">Tipo 1</th>
-            <th style="width: 25%;">Tipo 2 s/ fibras</th>
-            <th style="width: 25%;">Tipo 2 c/ fibras</th>
+            <th>Tipo 1</th>
+            <th>Tipo 2 s/ fibras</th>
+            <th>Tipo 2 c/ fibras</th>
         </tr>
         <tr>
             <td>Oferta calórica total*</td>
